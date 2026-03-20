@@ -1,41 +1,76 @@
 from __future__ import annotations
-from typing import List, Optional, Dict, Any
+
+from datetime import datetime
+from typing import Any
+
 from pydantic import BaseModel, Field
-class Destination(BaseModel):
+
+
+class Distribution(BaseModel):
     identifier: str
-    distribution: float | str
-    narration: Optional[str] = None
-class Source(BaseModel):
-    identifier: str
-    distribution: float | str
-    narration: Optional[str] = None
+    distribution: str
+    narration: str | None = None
+
+
 class TransactionCreate(BaseModel):
-    source: Optional[str] = None
-    destination: Optional[str] = None
-    sources: Optional[List[Source]] = None
-    destinations: Optional[List[Destination]] = None
+    source: str | None = None
+    destination: str | None = None
+    sources: list[Distribution] | None = None
+    destinations: list[Distribution] | None = None
     amount: float
-    precision: int = 100
+    precision: float = 100
     reference: str
-    currency: str = 'GHS'
-    description: Optional[str] = None
-    inflight: bool = False
-    meta_data: Dict[str, Any] = Field(default_factory=dict)
-class Transaction(BaseModel):
-    id: str
-    reference: str
-    status: str
-    amount: float
-    precision: int
     currency: str
-    source: Optional[str] = None
-    destination: Optional[str] = None
-    created_at: str
-    applied_at: Optional[str] = None
-    parent_transaction: Optional[str] = None
-    meta_data: Dict[str, Any] = Field(default_factory=dict)
+    description: str | None = None
+    inflight: bool = False
+    allow_overdraft: bool = False
+    skip_queue: bool = False
+    meta_data: dict[str, Any] | None = Field(default=None)
+
+
+class Transaction(BaseModel):
+    """Blnk transaction — maps to Go model.Transaction struct."""
+
+    transaction_id: str
+    amount: float
+    precise_amount: int | None = None
+    precision: float = 0
+    source: str | None = None
+    destination: str | None = None
+    reference: str
+    currency: str
+    description: str = ""
+    status: str
+    hash: str = ""
+    allow_overdraft: bool = False
+    inflight: bool = False
+    parent_transaction: str = ""
+    created_at: datetime
+    meta_data: dict[str, Any] | None = None
+    sources: list[Distribution] | None = None
+    destinations: list[Distribution] | None = None
+
+
 class InflightUpdate(BaseModel):
     status: str
+    amount: float | None = None
+
+
 class RefundRequest(BaseModel):
-    reason: Optional[str] = None
-    meta_data: Dict[str, Any] = Field(default_factory=dict)
+    reason: str | None = None
+    meta_data: dict[str, Any] | None = Field(default=None)
+
+
+class BulkTransactionRequest(BaseModel):
+    transactions: list[TransactionCreate]
+    inflight: bool = False
+    atomic: bool = False
+    run_async: bool = False
+    skip_queue: bool = False
+
+
+class BulkTransactionResult(BaseModel):
+    batch_id: str
+    status: str
+    transaction_count: int = 0
+    error: str | None = None

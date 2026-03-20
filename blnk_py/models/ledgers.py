@@ -1,14 +1,20 @@
 from __future__ import annotations
-from typing import Dict, Any
+
+from datetime import datetime
+from typing import Any
+
 from pydantic import BaseModel, Field
+
+
 class Ledger(BaseModel):
-    id: str
+    """Blnk ledger — maps to Go model.Ledger struct."""
+
+    ledger_id: str
     name: str
-    currency: str
-    precision: int
-    meta_data: Dict[str, Any] = Field(default_factory=dict)
+    created_at: datetime
+    meta_data: dict[str, Any] | None = None
+
+
 class CreateLedger(BaseModel):
     name: str
-    currency: str = 'GHS'
-    precision: int = 100
-    meta_data: Dict[str, Any] = Field(default_factory=dict)
+    meta_data: dict[str, Any] | None = Field(default=None)

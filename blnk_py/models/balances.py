@@ -1,19 +1,35 @@
 from __future__ import annotations
-from typing import Dict, Any
+
+from datetime import datetime
+from typing import Any
+
 from pydantic import BaseModel, Field
+
+
 class Balance(BaseModel):
-    id: str
+    """Blnk balance — maps to Go model.Balance struct."""
+
+    balance_id: str
+    balance: int
+    credit_balance: int
+    debit_balance: int
+    inflight_balance: int = 0
+    inflight_credit_balance: int = 0
+    inflight_debit_balance: int = 0
+    currency_multiplier: float = 0
     ledger_id: str
+    identity_id: str = ""
+    indicator: str | None = None
     currency: str
-    precision: int
-    balance: float
-    inflight_credit_balance: float = 0.0
-    inflight_debit_balance: float = 0.0
-    queued_credit_balance: float = 0.0
-    queued_debit_balance: float = 0.0
-    meta_data: Dict[str, Any] = Field(default_factory=dict)
+    version: int = 0
+    created_at: datetime
+    meta_data: dict[str, Any] | None = None
+
+
 class CreateBalance(BaseModel):
     ledger_id: str
-    currency: str = 'GHS'
-    precision: int = 100
-    meta_data: Dict[str, Any] = Field(default_factory=dict)
+    currency: str
+    indicator: str | None = None
+    currency_multiplier: float = 0
+    identity_id: str | None = None
+    meta_data: dict[str, Any] | None = Field(default=None)
