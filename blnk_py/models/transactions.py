@@ -25,6 +25,7 @@ class TransactionCreate(BaseModel):
     inflight: bool = False
     allow_overdraft: bool = False
     skip_queue: bool = False
+    inflight_expiry_date: str | None = None
     meta_data: dict[str, Any] | None = Field(default=None)
 
 
