@@ -32,6 +32,8 @@ class BalancesResource:
 
     async def list(self) -> list[Balance]:
         data = await self._http.request("GET", "/balances")
+        if not data:
+            return []
         return [Balance.model_validate(item) for item in data]
 
     async def filter(
@@ -46,5 +48,9 @@ class BalancesResource:
             "/balances/filter",
             json={"filters": filters, "limit": limit, "offset": offset},
         )
+        if not data:
+            return []
         items = data.get("data", []) if isinstance(data, dict) else data
+        if not items:
+            return []
         return [Balance.model_validate(item) for item in items]

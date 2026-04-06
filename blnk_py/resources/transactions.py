@@ -74,7 +74,11 @@ class TransactionsResource:
             "/transactions/filter",
             json={"filters": filters, "limit": limit, "offset": offset},
         )
+        if not data:
+            return []
         items = data.get("data", []) if isinstance(data, dict) else data
+        if not items:
+            return []
         return [Transaction.model_validate(item) for item in items]
 
     async def create_bulk(self, body: BulkTransactionRequest) -> BulkTransactionResult:

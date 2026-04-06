@@ -36,7 +36,7 @@ class AsyncHttp:
         *,
         json: dict[str, Any] | None = None,
         idempotency_key: str | None = None,
-    ) -> dict[str, Any] | list[Any]:
+    ) -> dict[str, Any] | list[Any] | None:
         headers: dict[str, str] = {}
         if method.upper() in {"POST", "PUT", "PATCH"}:
             headers[IDEMPOTENCY_HEADER] = idempotency_key or str(uuid.uuid4())
